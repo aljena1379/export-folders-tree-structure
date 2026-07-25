@@ -11,7 +11,7 @@ type WebviewMessage =
   | { type: "addPatterns"; patterns: string[] }
   | { type: "removePattern"; pattern: string }
   | { type: "resetPatterns" }
-  | { type: "setOption"; key: "includeHidden" | "showFileSize"; value: boolean }
+  | { type: "setOption"; key: "includeHidden" | "showFileSize" | "humanReadable"; value: boolean }
   | { type: "refresh" }
   | { type: "copyToClipboard" }
   | { type: "exportToFile" };
@@ -34,6 +34,7 @@ export class FolderTreePanel {
       null,
       this.disposables,
     );
+    this.updateHtml();
   }
 
   public static register(extensionUri: vscode.Uri): FolderTreePanel {
@@ -65,7 +66,6 @@ export class FolderTreePanel {
 
   public async refresh(rootPath: string) {
     this.rootPath = rootPath;
-    this.updateHtml();
     await this.runGenerate();
   }
 
@@ -97,6 +97,7 @@ export class FolderTreePanel {
         options: {
           includeHidden: options.includeHidden,
           showFileSize: options.showFileSize,
+          humanReadable: options.humanReadable,
         },
       });
       this.post("patterns", {
@@ -121,6 +122,7 @@ export class FolderTreePanel {
     const initialOptions = {
       includeHidden: config.get<boolean>("includeHidden", false),
       showFileSize: config.get<boolean>("showFileSize", false),
+      humanReadable: config.get<boolean>("humanReadable", false),
     };
     const cssUri = this.panel.webview.asWebviewUri(
       vscode.Uri.file(path.join(this.extensionUri.fsPath, "media", "main.css")),
@@ -166,6 +168,7 @@ export class FolderTreePanel {
         <label>Options:</label>
         <label class="check"><input type="checkbox" id="opt-include-hidden" ${chk(initialOptions.includeHidden)} /> Hidden</label>
         <label class="check"><input type="checkbox" id="opt-show-size" ${chk(initialOptions.showFileSize)} /> Show size</label>
+        <label class="check"><input type="checkbox" id="opt-human-readable" ${chk(initialOptions.humanReadable)} /> Human readable</label>
       </div>
       <div class="settings-row">
         <label for="pattern-input">Ignore pattern (glob):</label>
@@ -237,18 +240,16 @@ export class FolderTreePanel {
       next,
       vscode.ConfigurationTarget.Workspace,
     );
-    await this.runGenerate();
   }
 
   private async updateOption(
-    key: "includeHidden" | "showFileSize",
+    key: "includeHidden" | "showFileSize" | "humanReadable",
     value: boolean,
   ): Promise<void> {
     const config = vscode.workspace.getConfiguration(
       "exportFoldersTreeStructure",
     );
     await config.update(key, value, vscode.ConfigurationTarget.Workspace);
-    await this.runGenerate();
   }
 
   private async exportLast() {

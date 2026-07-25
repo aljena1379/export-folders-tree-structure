@@ -7,6 +7,7 @@ export interface TreeOptions {
   includeHidden: boolean;
   maxDepth: number;
   showFileSize: boolean;
+  humanReadable: boolean;
 }
 
 export interface TreeNode {
@@ -204,6 +205,14 @@ function buildNode(
   return node;
 }
 
+function getIndent(depth: number, isRoot: boolean, humanReadable: boolean): string {
+  if (isRoot) return "";
+  if (humanReadable) {
+    return "-".repeat(depth * 4);
+  }
+  return "-".repeat(depth);
+}
+
 function renderNode(
   node: TreeNode,
   depth: number,
@@ -215,7 +224,7 @@ function renderNode(
     !node.isDirectory && options.showFileSize && node.size !== undefined ?
       `  (${formatSize(node.size)})`
     : "";
-  const prefix = "-".repeat(depth + 1);
+  const prefix = getIndent(depth, isRoot, options.humanReadable);
   const displayName = isRoot ? node.path : node.name + sizeLabel;
   const headerText = prefix + displayName;
   lines.push({
@@ -230,8 +239,11 @@ function renderNode(
   }
 
   if (node.truncated && !isRoot) {
+    const truncatedPrefix = options.humanReadable
+      ? "-".repeat((depth + 1) * 4)
+      : "-".repeat(depth + 1);
     lines.push({
-      text: "-".repeat(depth + 2) + TRUNCATION_MARK,
+      text: truncatedPrefix + TRUNCATION_MARK,
       isDir: false,
       truncated: true,
     });
@@ -309,6 +321,7 @@ export function getConfigOptions(): TreeOptions {
     includeHidden: config.get<boolean>("includeHidden", false),
     maxDepth: config.get<number>("maxDepth", 20),
     showFileSize: config.get<boolean>("showFileSize", false),
+    humanReadable: config.get<boolean>("humanReadable", false),
   };
 }
 

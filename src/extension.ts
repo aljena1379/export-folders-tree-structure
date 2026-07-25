@@ -146,7 +146,8 @@ export function activate(context: vscode.ExtensionContext) {
         ) ||
         e.affectsConfiguration("exportFoldersTreeStructure.includeHidden") ||
         e.affectsConfiguration("exportFoldersTreeStructure.maxDepth") ||
-        e.affectsConfiguration("exportFoldersTreeStructure.showFileSize")
+        e.affectsConfiguration("exportFoldersTreeStructure.showFileSize") ||
+        e.affectsConfiguration("exportFoldersTreeStructure.humanReadable")
       ) {
         if (FolderTreePanel.current && activeRootPath) {
           await FolderTreePanel.current.refresh(activeRootPath);

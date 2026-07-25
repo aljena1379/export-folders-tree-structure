@@ -15,9 +15,9 @@
   const elBtnCopy = document.getElementById('btn-copy');
   const elBtnExport = document.getElementById('btn-export');
   const elBtnAdd = document.getElementById('btn-add-pattern');
-  const elOptFiles = document.getElementById('opt-include-files');
   const elOptHidden = document.getElementById('opt-include-hidden');
   const elOptSize = document.getElementById('opt-show-size');
+  const elOptHumanReadable = document.getElementById('opt-human-readable');
 
   let currentLines = [];
   let expanded = true;
@@ -160,6 +160,7 @@
   }
   bindToggle(elOptHidden, 'includeHidden');
   bindToggle(elOptSize, 'showFileSize');
+  bindToggle(elOptHumanReadable, 'humanReadable');
 
   window.addEventListener('message', (event) => {
     const msg = event.data;
@@ -176,6 +177,7 @@
       if (p.options) {
         elOptHidden.checked = !!p.options.includeHidden;
         elOptSize.checked = !!p.options.showFileSize;
+        elOptHumanReadable.checked = !!p.options.humanReadable;
       }
       applyRender();
     } else if (msg.type === 'patterns') {
