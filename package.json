@@ -2,8 +2,9 @@
   "name": "export-folders-tree-structure",
   "displayName": "Export Folders Tree Structure",
   "description": "Generate, copy, and export the tree structure of any folder with configurable ignore patterns.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "Aljena3713",
+  "icon": "resources/icon.png",
   "engines": {
     "vscode": "^1.85.0"
   },
