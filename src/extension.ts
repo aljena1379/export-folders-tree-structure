@@ -5,6 +5,7 @@ import { generateTree, getConfigOptions, TreeResult } from "./treeGenerator";
 import { FolderTreePanel } from "./webviewPanel";
 
 let activeRootPath: string | null = null;
+let extensionContext: vscode.ExtensionContext | null = null;
 
 function resolveTargetUri(uri?: vscode.Uri): vscode.Uri | undefined {
   if (uri) return uri;
@@ -27,10 +28,6 @@ async function buildTree(target: vscode.Uri): Promise<TreeResult> {
   return outcome.result;
 }
 
-function revealPanel() {
-  FolderTreePanel.reveal();
-}
-
 async function commandShow(uri?: vscode.Uri) {
   const target = resolveTargetUri(uri);
   if (!target) {
@@ -40,8 +37,16 @@ async function commandShow(uri?: vscode.Uri) {
     return;
   }
   activeRootPath = target.fsPath;
-  revealPanel();
-  await FolderTreePanel.current?.refresh(target.fsPath);
+
+  if (extensionContext) {
+    FolderTreePanel.register(extensionContext.extensionUri);
+    FolderTreePanel.reveal();
+    await FolderTreePanel.current?.refresh(target.fsPath);
+  } else {
+    vscode.window.showErrorMessage(
+      "Export Folders Tree: extension not properly initialized.",
+    );
+  }
 }
 
 async function commandCopy(uri?: vscode.Uri) {
@@ -110,6 +115,7 @@ async function commandExport(uri?: vscode.Uri) {
 }
 
 export function activate(context: vscode.ExtensionContext) {
+  extensionContext = context;
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "exportFoldersTreeStructure.show",
@@ -148,8 +154,6 @@ export function activate(context: vscode.ExtensionContext) {
       }
     }),
   );
-
-  context.subscriptions.push(FolderTreePanel.register(context.extensionUri));
 }
 
 export function deactivate() {
