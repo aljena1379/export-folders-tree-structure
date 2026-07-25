@@ -2,7 +2,7 @@
   "name": "export-folders-tree-structure",
   "displayName": "Export Folders Tree Structure",
   "description": "Generate, copy, and export the tree structure of any folder with configurable ignore patterns.",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "publisher": "Aljena3713",
   "license": "MIT",
   "icon": "resources/icon.png",
@@ -72,7 +72,8 @@
             "**/.next",
             "**/.cache",
             "**/.DS_Store",
-            "**/*.log"
+            "**/*.log",
+            "**/vendor"
           ],
           "description": "Default patterns (glob) ignored when building the tree.",
           "editPresentation": "multiline"
