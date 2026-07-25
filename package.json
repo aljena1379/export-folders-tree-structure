@@ -1,0 +1,118 @@
+{
+  "name": "export-folders-tree-structure",
+  "displayName": "Export Folders Tree Structure",
+  "description": "Generate, copy, and export the tree structure of any folder with configurable ignore patterns.",
+  "version": "1.0.0",
+  "publisher": "Aljena3713",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:exportFoldersTreeStructure.show",
+    "onCommand:exportFoldersTreeStructure.copy",
+    "onCommand:exportFoldersTreeStructure.export"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "exportFoldersTreeStructure.show",
+        "title": "Export: Show Folder Tree Structure",
+        "category": "Folder Tree"
+      },
+      {
+        "command": "exportFoldersTreeStructure.copy",
+        "title": "Export: Copy Folder Tree to Clipboard",
+        "category": "Folder Tree"
+      },
+      {
+        "command": "exportFoldersTreeStructure.export",
+        "title": "Export: Save Folder Tree as text",
+        "category": "Folder Tree"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "exportFoldersTreeStructure.show",
+          "when": "explorerResourceIsFolder",
+          "group": "exportFoldersTreeStructure"
+        },
+        {
+          "command": "exportFoldersTreeStructure.copy",
+          "when": "explorerResourceIsFolder",
+          "group": "exportFoldersTreeStructure"
+        },
+        {
+          "command": "exportFoldersTreeStructure.export",
+          "when": "explorerResourceIsFolder",
+          "group": "exportFoldersTreeStructure"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Export Folders Tree Structure",
+      "properties": {
+        "exportFoldersTreeStructure.defaultIgnorePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/.git",
+            "**/node_modules",
+            "**/.vscode",
+            "**/dist",
+            "**/build",
+            "**/out",
+            "**/.next",
+            "**/.cache",
+            "**/.DS_Store",
+            "**/*.log"
+          ],
+          "description": "Default patterns (glob) ignored when building the tree.",
+          "editPresentation": "multiline"
+        },
+        "exportFoldersTreeStructure.customIgnorePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Additional user-defined ignore patterns (glob).",
+          "editPresentation": "multiline"
+        },
+        "exportFoldersTreeStructure.includeHidden": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include hidden files/folders (those starting with a dot)."
+        },
+        "exportFoldersTreeStructure.maxDepth": {
+          "type": "number",
+          "default": 20,
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Maximum recursion depth when building the tree."
+        },
+        "exportFoldersTreeStructure.showFileSize": {
+          "type": "boolean",
+          "default": false,
+          "description": "Append file sizes next to each file in the tree."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.4.0"
+  }
+}
