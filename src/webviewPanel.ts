@@ -127,7 +127,7 @@ export class FolderTreePanel {
     };
     const searchHighlightColor = config.get<string>(
       "searchHighlightColor",
-      "#FFDC0059",
+      "#BF0AC2A6",
     );
     const parsedColor = parseHighlightColor(searchHighlightColor);
     const cssUri = this.panel.webview.asWebviewUri(

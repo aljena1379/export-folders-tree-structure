@@ -4,7 +4,7 @@ An extension that generates the **tree structure of any folder** in your workspa
 
 ![demo](https://img.shields.io/badge/vscode-extension-blue)
 
-![Workflow demo](resources/workflow.gif)
+![Workflow demo](https://raw.githubusercontent.com/aljena1379/export-folders-tree-structure/master/resources/workflow.gif)
 
 ## ✨ Features
 
@@ -49,7 +49,7 @@ If a folder is deeper than `maxDepth`, the truncated subtree is replaced with a 
 | `exportFoldersTreeStructure.includeHidden` | Include dotfiles / dotfolders. | `true` |
 | `exportFoldersTreeStructure.maxDepth` | Maximum recursion depth (1–100). | `20` |
 | `exportFoldersTreeStructure.showFileSize` | Append file sizes to each entry. | `false` |
-| `exportFoldersTreeStructure.searchHighlightColor` | Background color for search match highlights in the tree. Set via the color picker in Settings UI. | `#FFDC0059` |
+| `exportFoldersTreeStructure.searchHighlightColor` | Background color for search match highlights in the tree. Set via the color picker in Settings UI. | `#BF0AC2A6` |
 
 Patterns support globs: `*`, `**`, `?`, and character classes. Match semantics:
 

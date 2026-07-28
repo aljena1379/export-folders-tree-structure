@@ -1,0 +1,17 @@
+# From .gitignore (exclude the same — but keep out/ since we need compiled JS in VSIX)
+node_modules/
+*.vsix
+.freebuff/
+.vscode/**
+.offline-markdown-preview
+
+# Extra VSIX-specific ignores
+.git/**
+src/**
+tsconfig.json
+resources/workflow.gif
+.gitignore
+.gitattributes
+.vscodeignore
+package-lock.json
+yarn.lock
