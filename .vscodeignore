@@ -1,4 +1,4 @@
-# From .gitignore (exclude the same — but keep out/ since we need compiled JS in VSIX)
+# From .gitignore
 node_modules/
 *.vsix
 .freebuff/
