@@ -12,6 +12,7 @@ type WebviewMessage =
   | { type: "removePattern"; pattern: string }
   | { type: "resetPatterns" }
   | { type: "setOption"; key: "includeHidden" | "showFileSize" | "humanReadable"; value: boolean }
+  | { type: "setHighlightColor"; color: string }
   | { type: "refresh" }
   | { type: "copyToClipboard" }
   | { type: "exportToFile" };
@@ -124,6 +125,11 @@ export class FolderTreePanel {
       showFileSize: config.get<boolean>("showFileSize", false),
       humanReadable: config.get<boolean>("humanReadable", false),
     };
+    const searchHighlightColor = config.get<string>(
+      "searchHighlightColor",
+      "#FFDC0059",
+    );
+    const parsedColor = parseHighlightColor(searchHighlightColor);
     const cssUri = this.panel.webview.asWebviewUri(
       vscode.Uri.file(path.join(this.extensionUri.fsPath, "media", "main.css")),
     );
@@ -137,8 +143,9 @@ export class FolderTreePanel {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${this.panel.webview.cspSource}; script-src 'nonce-${nonce}';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${this.panel.webview.cspSource} 'nonce-${nonce}'; script-src 'nonce-${nonce}';" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style nonce="${nonce}">:root { --search-highlight-bg: ${searchHighlightColor}; }</style>
   <link rel="stylesheet" href="${cssUri}" />
   <title>Folder Tree Structure</title>
 </head>
@@ -170,18 +177,42 @@ export class FolderTreePanel {
         <label class="check"><input type="checkbox" id="opt-show-size" ${chk(initialOptions.showFileSize)} /> Show size</label>
         <label class="check"><input type="checkbox" id="opt-human-readable" ${chk(initialOptions.humanReadable)} /> Human readable</label>
       </div>
-      <div class="settings-row">
-        <label for="pattern-input">Ignore pattern (glob):</label>
-        <div class="input-row">
-          <input id="pattern-input" type="text" placeholder="e.g. *.lock, src/**/*.test.ts, **/node_modules" />
-          <button id="btn-add-pattern" class="btn">Add</button>
+    </section>
+
+    <section class="settings advanced-settings">
+      <button class="advanced-toggle" id="btn-advanced-toggle">
+        <span class="chevron">▶</span> Advanced settings
+      </button>
+      <div class="advanced-body" id="advanced-body">
+        <div class="settings-row">
+          <label>Highlight color:</label>
+          <div class="color-picker">
+            <input type="color" id="highlight-color" value="${parsedColor.base}" title="Pick a base color" />
+            <div class="opacity-group">
+              <input type="range" id="highlight-opacity" min="0" max="100" value="${parsedColor.alpha}" class="opacity-slider" />
+              <span class="opacity-label">${parsedColor.alpha}%</span>
+            </div>
+            <span class="color-hex-preview" id="color-hex-preview">${searchHighlightColor.toUpperCase()}</span>
+          </div>
         </div>
+        <div class="settings-divider"></div>
+        <div class="settings-row">
+          <label for="pattern-input">Ignore pattern (glob):</label>
+          <div class="input-row">
+            <input id="pattern-input" type="text" placeholder="e.g. *.lock, src/**/*.test.ts, **/node_modules" />
+            <button id="btn-add-pattern" class="btn">Add</button>
+          </div>
+        </div>
+        <div class="chips" id="pattern-chips"></div>
       </div>
-      <div class="chips" id="pattern-chips"></div>
     </section>
 
     <section class="tree-wrap">
       <div class="tree-toolbar">
+        <div class="search-box">
+          <input id="search-input" type="text" placeholder="🔍 Search files…" spellcheck="false" />
+        </div>
+        <span id="search-count" class="search-count"></span>
         <span id="copy-feedback" class="feedback"></span>
       </div>
       <pre id="tree" class="tree">Select a folder and run "Export: Show Folder Tree Structure".</pre>
@@ -209,6 +240,9 @@ export class FolderTreePanel {
         break;
       case "setOption":
         await this.updateOption(message.key, message.value);
+        break;
+      case "setHighlightColor":
+        await this.updateHighlightColor(message.color);
         break;
       case "refresh":
         await this.runGenerate();
@@ -297,6 +331,17 @@ export class FolderTreePanel {
     this.panel.webview.postMessage({ type, payload });
   }
 
+  private async updateHighlightColor(color: string): Promise<void> {
+    const config = vscode.workspace.getConfiguration(
+      "exportFoldersTreeStructure",
+    );
+    await config.update(
+      "searchHighlightColor",
+      color,
+      vscode.ConfigurationTarget.Workspace,
+    );
+  }
+
   public dispose() {
     FolderTreePanel.current = undefined;
     while (this.disposables.length) {
@@ -310,6 +355,16 @@ export class FolderTreePanel {
 
 function dedupe(arr: string[]): string[] {
   return Array.from(new Set(arr.map((s) => s.trim()).filter(Boolean)));
+}
+
+function parseHighlightColor(hex: string): { base: string; alpha: number } {
+  const clean = hex.replace("#", "");
+  if (clean.length === 8) {
+    const r = clean.slice(0, 6);
+    const a = parseInt(clean.slice(6, 8), 16);
+    return { base: "#" + r, alpha: Math.round((a / 255) * 100) };
+  }
+  return { base: "#" + clean.slice(0, 6), alpha: 100 };
 }
 
 function getNonce(): string {

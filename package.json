@@ -2,7 +2,7 @@
   "name": "export-folders-tree-structure",
   "displayName": "Export Folders Tree Structure",
   "description": "Generate, copy, and export the tree structure of any folder with configurable ignore patterns.",
-  "version": "1.1.4",
+  "version": "1.2.6",
   "publisher": "Aljena3713",
   "license": "MIT",
   "icon": "resources/icon.png",
@@ -108,6 +108,12 @@
           "type": "boolean",
           "default": false,
           "description": "Use wider indentation and omit the root prefix for a more human-readable tree."
+        },
+        "exportFoldersTreeStructure.searchHighlightColor": {
+          "type": "string",
+          "format": "color-hex",
+          "default": "#FFDC0059",
+          "description": "Background color for highlighted search matches in the tree."
         }
       }
     }

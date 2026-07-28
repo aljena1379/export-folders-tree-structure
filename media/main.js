@@ -21,6 +21,24 @@
 
   let currentLines = [];
   let expanded = true;
+  let searchTerm = '';
+  const elSearch = document.getElementById('search-input');
+  const elSearchCount = document.getElementById('search-count');
+
+  // Advanced settings
+  const elToggle = document.getElementById('btn-advanced-toggle');
+  const elAdvancedBody = document.getElementById('advanced-body');
+  const elHighlightColor = document.getElementById('highlight-color');
+  const elHighlightOpacity = document.getElementById('highlight-opacity');
+  const elOpacityLabel = document.querySelector('.opacity-label');
+  const elColorPreview = document.getElementById('color-hex-preview');
+
+  function highlightText(text, term) {
+    if (!term) return escapeHtml(text);
+    const escaped = escapeHtml(text);
+    const regex = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+    return escaped.replace(regex, '<mark class="hl">$1</mark>');
+  }
 
   function showFeedback(text) {
     elFeedback.textContent = text;
@@ -53,7 +71,7 @@
   }
 
   function renderLines(lines, limit) {
-    const slice = limit > 0 ? lines.slice(0, limit) : lines;
+    let slice = limit > 0 ? lines.slice(0, limit) : lines;
     const html = slice
       .map((ln, idx) => {
         const isFirst = idx === 0;
@@ -64,16 +82,21 @@
           : ln.isDir
           ? 'dir'
           : 'file';
+        const txt = searchTerm ? highlightText(ln.text, searchTerm) : escapeHtml(ln.text);
         return (
           '<span class="' +
           cls +
           '">' +
-          escapeHtml(ln.text) +
+          txt +
           '</span>'
         );
       })
       .join('\n');
-    const tail = limit > 0 && lines.length > limit ? '\n… ' + (lines.length - limit) + ' more lines' : '';
+    const totalMatching = searchTerm
+      ? currentLines.filter((ln) => ln.text.toLowerCase().includes(searchTerm.toLowerCase())).length
+      : currentLines.length;
+    elSearchCount.textContent = searchTerm && totalMatching > 0 ? totalMatching + ' matches' : '';
+    const tail = limit > 0 && currentLines.length > limit ? '\n… ' + (currentLines.length - limit) + ' more lines' : '';
     elTree.innerHTML = html + tail;
   }
 
@@ -160,7 +183,35 @@
   }
   bindToggle(elOptHidden, 'includeHidden');
   bindToggle(elOptSize, 'showFileSize');
-  bindToggle(elOptHumanReadable, 'humanReadable');
+  bindToggle(elOptHumanReadable, 'humanReadable'  );
+
+  elSearch.addEventListener('input', () => {
+    searchTerm = elSearch.value.trim();
+    applyRender();
+  });
+
+  // Collapsible advanced settings
+  elToggle.addEventListener('click', () => {
+    const isOpen = elAdvancedBody.classList.toggle('open');
+    elToggle.querySelector('.chevron').textContent = isOpen ? '▼' : '▶';
+  });
+
+  // Color picker
+  function updateHighlightColor() {
+    const base = elHighlightColor.value;
+    const alpha = parseInt(elHighlightOpacity.value);
+    const alphaHex = Math.round((alpha / 100) * 255).toString(16).padStart(2, '0');
+    const fullHex = (base + alphaHex).toUpperCase();
+
+    document.documentElement.style.setProperty('--search-highlight-bg', fullHex);
+    elColorPreview.textContent = fullHex;
+    elOpacityLabel.textContent = alpha + '%';
+
+    vscode.postMessage({ type: 'setHighlightColor', color: fullHex });
+  }
+
+  elHighlightColor.addEventListener('input', updateHighlightColor);
+  elHighlightOpacity.addEventListener('input', updateHighlightColor);
 
   window.addEventListener('message', (event) => {
     const msg = event.data;

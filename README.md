@@ -49,6 +49,7 @@ If a folder is deeper than `maxDepth`, the truncated subtree is replaced with a 
 | `exportFoldersTreeStructure.includeHidden` | Include dotfiles / dotfolders. | `true` |
 | `exportFoldersTreeStructure.maxDepth` | Maximum recursion depth (1–100). | `20` |
 | `exportFoldersTreeStructure.showFileSize` | Append file sizes to each entry. | `false` |
+| `exportFoldersTreeStructure.searchHighlightColor` | Background color for search match highlights in the tree. Set via the color picker in Settings UI. | `#FFDC0059` |
 
 Patterns support globs: `*`, `**`, `?`, and character classes. Match semantics:
 
