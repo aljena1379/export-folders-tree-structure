@@ -4,6 +4,8 @@ An extension that generates the **tree structure of any folder** in your workspa
 
 ![demo](https://img.shields.io/badge/vscode-extension-blue)
 
+![Workflow demo](resources/workflow.gif)
+
 ## ✨ Features
 
 - 🌲 **Tree view generator** — ASCII tree of any folder in your workspace, similar to the `tree` CLI.

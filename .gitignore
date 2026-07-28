@@ -3,3 +3,4 @@ out/
 *.vsix
 .freebuff/
 .vscode
+.offline-markdown-preview
