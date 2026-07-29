@@ -2,7 +2,7 @@
 
 An extension that generates the **tree structure of any folder** in your workspace, with configurable ignore patterns, one-click copy, and `.txt` / `.md` export.
 
-![demo](https://img.shields.io/badge/vscode-extension-blue)
+[![VS Code Marketplace](https://img.shields.io/badge/vscode-extension-blue)](https://marketplace.visualstudio.com/items?itemName=Aljena3713.export-folders-tree-structure)
 
 ![Workflow demo](https://raw.githubusercontent.com/aljena1379/export-folders-tree-structure/master/resources/workflow.gif)
 
